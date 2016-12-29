@@ -9,9 +9,11 @@ django_installed_apps: []
 django_secret_key: insecure1234567890!@#$%^&*()
 django_debug: yes
 django_allowed_hosts: []
-django_yaml_logfile: no
 django_log_path: /var/log/{{ django_project }}
 
+# extras
+django_yaml_logfile: no
+django_enable_coverage: no
 # anything not covered in the defaults can be added here
 # but any complex objects will probably not work
 django_addl_settings: {}

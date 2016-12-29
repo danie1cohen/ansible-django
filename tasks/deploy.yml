@@ -32,6 +32,10 @@
   pip: name=Django executable={{ virtualenv_pip }}
   when: reqmts.stat.exists == False
 
+- name: hack manage to start coverage before setup
+  template: src=templates/manage.py.j2 dest={{ build }}/manage.py
+  when: django_enable_coverage == True
+
 - name: set manage as executable
   file: path={{ build }}/manage.py state=file mode=u+rwx
   become: yes
