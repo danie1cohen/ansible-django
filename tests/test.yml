@@ -3,6 +3,6 @@
   remote_user: root
   vars:
     django_repo: https://github.com/danie1cohen/django-demo.git
-    project: django-demo
+    project: django_demo
   roles:
     - ansible-django
