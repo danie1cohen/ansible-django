@@ -4,7 +4,7 @@ Django settings for {{ django_project }} project.
 import os
 from datetime import timedelta
 
-import yaml
+{% if django_yaml_logfile %}import yaml{% endif %}
 
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
