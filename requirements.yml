@@ -1,0 +1,4 @@
+---
+
+- name: danie1cohen.virtualenv3
+  src: git+https://github.com/danie1cohen/ansible-virtualenv3
