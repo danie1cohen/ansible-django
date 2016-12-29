@@ -20,8 +20,17 @@
 
 - meta: flush_handlers
 
+- name: find requirements.txt
+  stat: path={{ build }}/requirements.txt
+  register: reqs
+
 - name: install requirements in venv
   pip: requirements={{ build }}/requirements.txt executable={{ virtualenv_pip }}
+  when: reqs.exists
+
+- name: install django
+  pip: name=Django executable={{ virtualenv_pip }}
+  when: not reqs.exists
 
 - name: set manage as executable
   file: path={{ build }}/manage.py state=file mode=u+rwx
