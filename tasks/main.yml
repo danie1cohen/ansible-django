@@ -1,0 +1,28 @@
+---
+# tasks file for django
+
+- name: set timezone
+  file: src=/usr/share/zoneinfo/{{ django_time_zone }} dest=/etc/localtime
+        state=link force=yes
+  become: yes
+
+- name: set up log folder
+  file: path={{ django_log_path }} state=directory
+        owner={{ django_user }} group={{ django_user }} mode=0775
+  become: yes
+
+- name: add useful shortcuts to .profile
+  blockinfile:
+    dest: /home/{{ django_user }}/.profile
+    state: present
+    block: |
+      alias runserver="{{ virtualenv }}/bin/python {{ django_install_path }}/current/manage.py runserver 0.0.0.0:8000"
+      alias django="{{ virtualenv }}/bin/python {{ django_install_path }}/current/manage.py $@"
+
+- name: check current install for updates
+  shell: cd {{ django_install_path }}/current && git fetch && git status | grep -q "Your branch is up-to-date" && exit 0 || exit 1
+  register: up_to_date
+  ignore_errors: True
+
+- include: deploy.yml
+  when: up_to_date|failed

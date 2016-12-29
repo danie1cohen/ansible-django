@@ -1,0 +1,74 @@
+---
+
+# defaults file for django
+
+django_repo: https://github.com/Chive/django-poll-app.git # just a demo project
+django_project: "{{ project }}" # defaults to virtualenv3 project
+django_install_path: /var/www/{{ project }}
+django_installed_apps: []
+django_secret_key: insecure1234567890!@#$%^&*()
+django_debug: yes
+django_allowed_hosts: []
+django_yaml_logfile: no
+django_log_path: /var/log/{{ django_project }}
+
+# anything not covered in the defaults can be added here
+# but any complex objects will probably not work
+django_addl_settings: {}
+
+django_user: "{{ virtualenv_user }}"
+django_root_urlconf: "{{ django_project }}.urls"
+django_wsgi_application: "{{ django_project }}.wsgi.application"
+
+django_default_apps:
+  - django.contrib.admin
+  - django.contrib.auth
+  - django.contrib.contenttypes
+  - django.contrib.sessions
+  - django.contrib.messages
+  - django.contrib.staticfiles
+
+django_default_middlewares:
+  - django.middleware.security.SecurityMiddleware
+  - django.contrib.sessions.middleware.SessionMiddleware
+  - django.middleware.common.CommonMiddleware
+  - django.middleware.csrf.CsrfViewMiddleware
+  - django.contrib.auth.middleware.AuthenticationMiddleware
+  - django.contrib.messages.middleware.MessageMiddleware
+  - django.middleware.clickjacking.XFrameOptionsMiddleware
+
+django_middlewares: []
+
+django_templates:
+  - backend: django.template.backends.django.DjangoTemplates
+    dirs: []
+    app_dirs: yes
+    options:
+      context_processors:
+        - django.template.context_processors.debug
+        - django.template.context_processors.request
+        - django.contrib.auth.context_processors.auth
+        - django.contrib.messages.context_processors.messages
+
+django_databases:
+  - name: default
+    engine: django.db.backends.sqlite3
+    path: "{{ django_install_path }}/db.sqlite3"
+
+django_auth_password_validators:
+  - django.contrib.auth.password_validation.UserAttributeSimilarityValidator
+  - django.contrib.auth.password_validation.MinimumLengthValidator
+  - django.contrib.auth.password_validation.CommonPasswordValidator
+  - django.contrib.auth.password_validation.NumericPasswordValidator
+
+django_language_code: en-us
+django_time_zone: UTC
+django_use_i18n: yes
+django_use_l10n: yes
+django_use_tz: yes
+
+django_static_url: /static/
+django_static_path: /var/www/static/
+
+django_media_url: /media/
+django_media_path: /var/www/media/

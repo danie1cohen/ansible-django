@@ -1,0 +1,101 @@
+"""
+Django settings for {{ django_project }} project.
+"""
+import os
+from datetime import timedelta
+
+import yaml
+
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+{% if django_yaml_logfile %}
+with open('{{ django_yaml_logfile }}', 'rb') as stream:
+    LOGGING = yaml.load(stream)
+{% endif %}
+
+SECRET_KEY = '{{ django_secret_key }}'
+
+DEBUG = {% if django_debug %}True{% else %}False{% endif %}
+
+ALLOWED_HOSTS = [{{ django_allowed_hosts|join(',') }}]
+
+
+# Application definition
+
+INSTALLED_APPS = [
+{% for app in django_default_apps %}
+    '{{ app }}',
+{% endfor %}
+{% for app in django_installed_apps %}
+    '{{ app }}',
+{% endfor %}
+]
+
+MIDDLEWARE = [
+{% for middleware in django_default_middlewares %}
+    '{{ middleware }}',
+{% endfor %}
+{% for middleware in django_middlewares %}
+    '{{ middleware }}',
+{% endfor %}
+]
+
+ROOT_URLCONF = '{{ django_root_urlconf }}'
+
+TEMPLATES = [
+{% for template in django_templates %}
+    {
+        'BACKEND': '{{ template.backend }}',
+        'DIRS': [{% for dir in template.dirs %}'{{ dir }}',{% endfor %}],
+        'APP_DIRS': {% if template.app_dirs %}True{% else %}False{%endif %},
+        'OPTIONS': {{ template.options|to_json }},
+    }
+{% endfor %}
+]
+
+WSGI_APPLICATION = '{{ django_wsgi_application }}'
+
+DATABASES = {
+{% for db in django_databases %}
+    '{{ db.name }}': {
+        'ENGINE': '{{ db.engine }}',
+        'NAME': '{{ db.path }}',
+    },
+{% endfor %}
+}
+
+AUTH_PASSWORD_VALIDATORS = [
+{% for validator in django_auth_password_validators %}
+    {
+        'NAME': '{{ validator }}',
+    },
+{% endfor %}
+]
+
+LANGUAGE_CODE = '{{ django_language_code }}'
+
+TIME_ZONE = '{{ django_time_zone }}'
+
+USE_I18N = {% if django_use_i18n %}True{% else %}False{% endif %}
+
+USE_L10N = {% if django_use_l10n %}True{% else %}False{% endif %}
+
+USE_TZ = {% if django_use_tz %}True{% else %}False{% endif %}
+
+
+STATIC_URL = '{{ django_static_url }}'
+{% if django_static_path %}
+STATIC_ROOT = '{{ django_static_path }}'
+{% endif %}
+
+MEDIA_URL = '{{ django_media_url }}'
+{% if django_media_path %}
+MEDIA_ROOT = '{{ django_media_path }}'
+{% endif %}
+
+
+# Any additional settings
+{% for key, value in django_addl_settings.iteritems() %}
+{{ key }} = {{ value }}
+{% endfor %}

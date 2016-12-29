@@ -1,0 +1,87 @@
+--- # django/tasks/deploy.yml
+
+- name: set build folder
+  set_fact: build={{ django_install_path }}/{{ ansible_date_time.iso8601 }}
+
+- name: create build folder
+  file: path={{ build }} state=directory mode=0755
+        owner={{ django_user }} group={{ django_user }}
+  become: yes
+
+- name: download project from repo
+  git: repo={{ django_repo }} dest={{ build }} clone=yes
+
+- name: create settings.py file
+  template: src=templates/settings.py.j2
+            dest={{ build }}/{{ django_project }}/settings.py
+            mode=0600 owner={{ django_user }} group={{ django_user }}
+  notify:
+    - check settings syntax
+
+- meta: flush_handlers
+
+- name: install requirements in venv
+  pip: requirements={{ build }}/requirements.txt executable={{ virtualenv_pip }}
+
+- name: set manage as executable
+  file: path={{ build }}/manage.py state=file mode=u+rwx
+  become: yes
+
+- name: migrate db
+  django_manage: command=migrate app_path={{ build }}
+                 virtualenv={{ virtualenv }}
+
+- name: set db read/write permissions and ownership
+  file: path={{ item.path }} mode=0664
+        owner=www-data group=www-data
+  become: yes
+  with_items: "{{ django_databases }}"
+
+- name: set db enclosing folder permissions
+  file: path={{ django_install_path }} owner=www-data group=www-data mode=0775
+  become: yes
+
+- name: add django user to www-data
+  user: name={{ django_user }} groups=www-data append=yes
+  become: yes
+
+- name: create media folder
+  file: path={{ django_media_path }} state=directory mode=0755
+        owner=www-data group=www-data
+  become: yes
+  when: django_media_path == True
+
+- name: create static folder
+  file: path={{ django_static_path }} state=directory mode=0755
+        owner=www-data group=www-data
+  become: yes
+  when: django_static_path == True
+
+- name: collect static
+  django_manage: command=collectstatic app_path={{ build }}
+                 virtualenv={{ virtualenv }}
+  become: yes
+  when: django_static_path == True
+
+- name: set static permissions for folders
+  command: find {{ django_static_path }} -type d -exec chmod -c 0755 {} \;
+  register: chmod_result
+  changed_when: "chmod_result.stdout != \"\""
+  become: yes
+  when: django_static_path == True
+
+- name: set static permissions for files
+  command: find {{ django_static_path }} -type f -exec chmod -c 0644 {} \;
+  register: chmod_result
+  changed_when: "chmod_result.stdout != \"\""
+  become: yes
+  when: django_static_path == True
+
+- name: run tests
+  django_manage: command=test app_path={{ build }} virtualenv={{ virtualenv }}
+                 failfast=yes
+  become: yes
+
+- name: create symlink to new build
+  file: src={{ build }} dest={{ django_install_path }}/current state=link
+  become: yes
