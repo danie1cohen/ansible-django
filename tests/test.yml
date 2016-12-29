@@ -1,5 +1,8 @@
 ---
 - hosts: localhost
   remote_user: root
+  vars:
+    django_repo: https://github.com/Chive/django-poll-app.git
+    project: django-poll-app
   roles:
     - ansible-django
