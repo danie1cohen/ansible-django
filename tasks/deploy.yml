@@ -27,6 +27,8 @@
 - name: install requirements in venv
   pip: requirements={{ build }}/requirements.txt executable={{ virtualenv_pip }}
   when: reqmts.stat.exists == True
+  register: pip_result
+  changed_when: "'Successfully installed' in pip_result.stdout"
 
 - name: install django
   pip: name=Django executable={{ virtualenv_pip }}
