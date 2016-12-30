@@ -74,3 +74,8 @@ django_static_path: /var/www/static/
 
 django_media_url: /media/
 django_media_path: /var/www/media/
+
+django_test_runner: django.test.runner.DiscoverRunner
+
+# if using NoseRunner instead of default you may want to populate these
+django_nose_args: []

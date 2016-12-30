@@ -94,6 +94,16 @@ MEDIA_URL = '{{ django_media_url }}'
 MEDIA_ROOT = '{{ django_media_path }}'
 {% endif %}
 
+TEST_RUNNER = '{{ django_test_runner }}'
+
+{% if django_nose_args %}
+NOSE_ARGS = [
+{% for arg in django_nose_args %}
+    '{{ arg }}',
+{% endfor %}
+]
+{% endif %}
+
 
 # Any additional settings
 {% for key, value in django_addl_settings.iteritems() %}
