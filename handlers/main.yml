@@ -2,5 +2,5 @@
 # handlers file for django
 
 - name: check settings syntax
-  shell: cmd='{{ virtualenv }}/bin/python {{ build }}/{{ django_project }}/settings.py'
+  command: "{{ virtualenv }}/bin/python {{ build }}/{{ django_project }}/settings.py"
   become: yes
