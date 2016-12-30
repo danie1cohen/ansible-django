@@ -1,0 +1,11 @@
+--- # tasks/update.yml
+
+- name: set build folder
+  set_fact: build={{ django_install_path }}/current
+
+- name: update settings file
+  template: src=templates/settings.py.j2
+            dest={{ build }}/{{ django_project }}/settings.py
+            mode=0600 owner={{ django_user }} group={{ django_user }}
+  notify:
+    - check settings syntax

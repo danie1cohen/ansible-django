@@ -29,10 +29,5 @@
 - include: deploy.yml
   when: up_to_date|failed
 
-- name: update settings file
-  template: src=templates/settings.py.j2
-            dest={{ django_install_path }}/current/{{ django_project }}/settings.py
-            mode=0600 owner={{ django_user }} group={{ django_user }}
-  notify:
-    - check settings syntax
+- include: update.yml
   when: up_to_date|succeeded
