@@ -24,6 +24,15 @@
   shell: cd {{ django_install_path }}/current && git fetch && git status | grep -q "Your branch is up-to-date" && exit 0 || exit 1
   register: up_to_date
   ignore_errors: True
+  changed_when: up_to_date|failed
 
 - include: deploy.yml
   when: up_to_date|failed
+
+- name: update settings file
+  template: src=templates/settings.py.j2
+            dest={{ build }}/{{ django_project }}/settings.py
+            mode=0600 owner={{ django_user }} group={{ django_user }}
+  notify:
+    - check settings syntax
+  when: up_to_date|succeeded
