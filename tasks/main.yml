@@ -15,6 +15,7 @@
   blockinfile:
     dest: /home/{{ django_user }}/.profile
     state: present
+    mark: "# {mark} ansible-django managed block"
     block: |
       alias runserver="{{ virtualenv }}/bin/python {{ django_install_path }}/current/manage.py runserver 0.0.0.0:8000"
       alias django="{{ virtualenv }}/bin/python {{ django_install_path }}/current/manage.py $@"
