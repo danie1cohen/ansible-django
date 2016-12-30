@@ -64,35 +64,12 @@
   become: yes
   when: django_media_path == True
 
-- name: create static folder
-  file: path={{ django_static_path }} state=directory mode=0755
-        owner=www-data group=www-data
-  become: yes
-  when: django_static_path == True
-
-- name: collect static
-  django_manage: command=collectstatic app_path={{ build }}
-                 virtualenv={{ virtualenv }}
-  become: yes
-  when: django_static_path == True
-
-- name: set static permissions for folders
-  command: find {{ django_static_path }} -type d -exec chmod -c 0755 {} \;
-  register: chmod_result
-  changed_when: "chmod_result.stdout != \"\""
-  become: yes
-  when: django_static_path == True
-
-- name: set static permissions for files
-  command: find {{ django_static_path }} -type f -exec chmod -c 0644 {} \;
-  register: chmod_result
-  changed_when: "chmod_result.stdout != \"\""
-  become: yes
+- include: static.yml
   when: django_static_path == True
 
 - name: run tests
-  django_manage: command=test app_path={{ build }} virtualenv={{ virtualenv }}
-                 failfast=yes
+  django_manage: command=test failfast=yes
+                 app_path={{ build }} virtualenv={{ virtualenv }}
   become: yes
 
 - name: create symlink to new build
