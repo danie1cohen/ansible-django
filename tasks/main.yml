@@ -31,7 +31,7 @@
 
 - name: update settings file
   template: src=templates/settings.py.j2
-            dest={{ build }}/{{ django_project }}/settings.py
+            dest={{ django_install_path }}/current/{{ django_project }}/settings.py
             mode=0600 owner={{ django_user }} group={{ django_user }}
   notify:
     - check settings syntax
