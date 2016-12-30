@@ -49,7 +49,7 @@ Example Playbook
 
     - hosts: servers
       roles:
-         - django
+         - danie1cohen.django
 
 License
 -------
