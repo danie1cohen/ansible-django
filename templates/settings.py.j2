@@ -18,8 +18,11 @@ SECRET_KEY = '{{ django_secret_key }}'
 
 DEBUG = {% if django_debug %}True{% else %}False{% endif %}
 
-ALLOWED_HOSTS = [{{ django_allowed_hosts|join(',') }}]
-
+ALLOWED_HOSTS = [
+{% for host in django_allowed_hosts %}
+    '{{ host }}',
+{% endfor %}
+]
 
 # Application definition
 
@@ -83,6 +86,11 @@ USE_L10N = {% if django_use_l10n %}True{% else %}False{% endif %}
 
 USE_TZ = {% if django_use_tz %}True{% else %}False{% endif %}
 
+
+STATICFILES_FINDERS = (
+{% for finder in django_staticfiles_finders %}
+    '{{ finder }}',
+)
 
 STATIC_URL = '{{ django_static_url }}'
 {% if django_static_path %}

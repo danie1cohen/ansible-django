@@ -69,6 +69,10 @@ django_use_i18n: yes
 django_use_l10n: yes
 django_use_tz: yes
 
+django_staticfiles_finders:
+  - django.contrib.staticfiles.finders.FileSystemFinder
+  - django.contrib.staticfiles.finders.AppDirectoriesFinder
+
 django_static_url: /static/
 django_static_path: /var/www/static/
 
