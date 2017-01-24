@@ -17,6 +17,7 @@ with open('{{ django_yaml_logfile }}', 'rb') as stream:
 SECRET_KEY = '{{ django_secret_key }}'
 
 DEBUG = {% if django_debug %}True{% else %}False{% endif %}
+TEMPLATE_DEBUG = {% if django_template_debug %}True{% else %}False{% endif %}
 
 ALLOWED_HOSTS = [
 {% for host in django_allowed_hosts %}
@@ -90,6 +91,7 @@ USE_TZ = {% if django_use_tz %}True{% else %}False{% endif %}
 STATICFILES_FINDERS = (
 {% for finder in django_staticfiles_finders %}
     '{{ finder }}',
+{% endfor %}
 )
 
 STATIC_URL = '{{ django_static_url }}'
