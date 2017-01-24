@@ -8,6 +8,7 @@ django_install_path: /var/www/{{ project }}
 django_installed_apps: []
 django_secret_key: insecure1234567890!@#$%^&*()
 django_debug: yes
+django_template_debug: no
 django_allowed_hosts: []
 django_log_path: /var/log/{{ django_project }}
 
