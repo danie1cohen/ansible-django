@@ -38,5 +38,7 @@ script:
     && (echo 'Idempotence test: pass' && exit 0)
     || (echo 'Idempotence test: fail' && exit 1)
 
+after_success: ./merge.sh $USERNAME $PASSWORD
+
 notifications:
   webhooks: https://galaxy.ansible.com/api/v1/notifications/
