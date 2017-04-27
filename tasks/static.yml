@@ -1,7 +1,7 @@
 --- # django/tasks/static.yml
 
 - name: create static folder
-  file: path={{ django_static_path }} state=directory mode=0755
+  file: path={{ django_static_path }} state=directory mode=0775
         owner=www-data group=www-data
   become: yes
 
@@ -11,13 +11,13 @@
   become: yes
 
 - name: set static permissions for folders
-  command: find {{ django_static_path }} -type d -exec chmod -c 0755 {} \;
+  command: find {{ django_static_path }} -type d -exec chmod -c 0775 {} \;
   register: chmod_result
   changed_when: "chmod_result.stdout != \"\""
   become: yes
 
 - name: set static permissions for files
-  command: find {{ django_static_path }} -type f -exec chmod -c 0644 {} \;
+  command: find {{ django_static_path }} -type f -exec chmod -c 0664 {} \;
   register: chmod_result
   changed_when: "chmod_result.stdout != \"\""
   become: yes

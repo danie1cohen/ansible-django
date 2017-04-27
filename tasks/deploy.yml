@@ -10,15 +10,13 @@
 
 - name: download project from repo
   git: repo={{ django_repo }} dest={{ build }} clone=yes
+       version={{ django_repo_branch }}
+  when: django_key_file is not defined
 
-- name: create settings.py file
-  template: src=templates/settings.py.j2
-            dest={{ build }}/{{ django_project }}/settings.py
-            mode=0600 owner={{ django_user }} group={{ django_user }}
-  notify:
-    - check settings syntax
-
-- meta: flush_handlers
+- name: download project from repo w/key
+  git: repo={{ django_repo }} dest={{ build }} clone=yes
+       key_file={{ django_key_file }} version={{ django_repo_branch }}
+  when: django_key_file is defined
 
 - name: find requirements.txt
   stat: path={{ build }}/requirements.txt
@@ -29,6 +27,15 @@
   when: reqmts.stat.exists == True
   register: pip_result
   changed_when: "'Successfully installed' in pip_result.stdout"
+
+- name: create settings.py file
+  template: src=templates/settings.py.j2
+            dest={{ build }}/{{ django_project }}/settings.py
+            mode=0600 owner={{ django_user }} group={{ django_user }}
+  notify:
+    - check settings syntax
+
+- meta: flush_handlers
 
 - name: install django
   pip: name=Django executable={{ virtualenv_pip }}
@@ -51,6 +58,8 @@
         owner=www-data group=www-data
   become: yes
   with_items: "{{ django_databases }}"
+  when: item.engine == 'django.db.backends.sqlite3'
+  no_log: true
 
 - name: set db enclosing folder permissions
   file: path={{ django_install_path }} owner=www-data group=www-data mode=0775
@@ -61,17 +70,16 @@
   become: yes
 
 - name: create media folder
-  file: path={{ django_media_path }} state=directory mode=0755
+  file: path={{ django_media_path }} state=directory mode=0775
         owner=www-data group=www-data
   become: yes
-  when: django_media_path == True
+  when: django_media_path is defined
 
 - include: static.yml
-  when: django_static_path == True
+  when: django_static_path is defined
 
 - name: run tests
-  django_manage: command=test failfast=yes
-                 app_path={{ build }} virtualenv={{ virtualenv }}
+  django_manage: command=test failfast=yes app_path={{ build }} virtualenv={{ virtualenv }}
   become: yes
 
 - name: create symlink to new build

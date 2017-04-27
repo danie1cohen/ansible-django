@@ -27,7 +27,7 @@
   changed_when: up_to_date|failed
 
 - include: deploy.yml
-  when: up_to_date|failed
+  when: up_to_date|failed or django_force_deployments == True
 
 - include: update.yml
-  when: up_to_date|succeeded
+  when: up_to_date|succeeded and django_force_deployments == False

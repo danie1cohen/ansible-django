@@ -10,6 +10,7 @@ from datetime import timedelta
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 {% if django_yaml_logfile %}
+# logging
 with open('{{ django_yaml_logfile }}', 'rb') as stream:
     LOGGING = yaml.load(stream)
 {% endif %}
@@ -17,7 +18,6 @@ with open('{{ django_yaml_logfile }}', 'rb') as stream:
 SECRET_KEY = '{{ django_secret_key }}'
 
 DEBUG = {% if django_debug %}True{% else %}False{% endif %}
-TEMPLATE_DEBUG = {% if django_template_debug %}True{% else %}False{% endif %}
 
 ALLOWED_HOSTS = [
 {% for host in django_allowed_hosts %}
@@ -36,7 +36,7 @@ INSTALLED_APPS = [
 {% endfor %}
 ]
 
-MIDDLEWARE = [
+MIDDLEWARE_CLASSES = [
 {% for middleware in django_default_middlewares %}
     '{{ middleware }}',
 {% endfor %}
@@ -65,6 +65,21 @@ DATABASES = {
     '{{ db.name }}': {
         'ENGINE': '{{ db.engine }}',
         'NAME': '{{ db.path }}',
+{% if db.user is defined %}
+        'USER': '{{ db.user }}',
+{% endif %}
+{% if db.password is defined %}
+        'PASSWORD': '{{ db.password }}',
+{% endif %}
+{% if db.host is defined %}
+        'HOST': '{{ db.host }}',
+{% endif %}
+{% if db.port is defined %}
+        'PORT': {{ db.port }},
+{% endif %}
+{% if db.options is defined %}
+        'OPTIONS': {{ db.options|to_json }},
+{% endif %}
     },
 {% endfor %}
 }
@@ -77,6 +92,9 @@ AUTH_PASSWORD_VALIDATORS = [
 {% endfor %}
 ]
 
+# Internationalization
+# https://docs.djangoproject.com/en/1.8/topics/i18n/
+
 LANGUAGE_CODE = '{{ django_language_code }}'
 
 TIME_ZONE = '{{ django_time_zone }}'
@@ -87,23 +105,22 @@ USE_L10N = {% if django_use_l10n %}True{% else %}False{% endif %}
 
 USE_TZ = {% if django_use_tz %}True{% else %}False{% endif %}
 
-
+# static and media files
+STATIC_URL = '{{ django_static_url }}'
+MEDIA_URL = '{{ django_media_url }}'
 STATICFILES_FINDERS = (
 {% for finder in django_staticfiles_finders %}
     '{{ finder }}',
 {% endfor %}
 )
-
-STATIC_URL = '{{ django_static_url }}'
 {% if django_static_path %}
 STATIC_ROOT = '{{ django_static_path }}'
 {% endif %}
-
-MEDIA_URL = '{{ django_media_url }}'
 {% if django_media_path %}
 MEDIA_ROOT = '{{ django_media_path }}'
 {% endif %}
 
+# testing
 TEST_RUNNER = '{{ django_test_runner }}'
 
 {% if django_nose_args %}
@@ -116,6 +133,6 @@ NOSE_ARGS = [
 
 
 # Any additional settings
-{% for key, value in django_addl_settings.iteritems() %}
-{{ key }} = {{ value }}
+{% for key in django_addl_settings.keys()|sort %}
+{{ key }} = {{ django_addl_settings[key] }}
 {% endfor %}

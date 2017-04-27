@@ -3,6 +3,7 @@
 # defaults file for django
 
 django_repo: https://www.github.com/someproject.git # just a demo project
+django_repo_branch: master
 django_project: "{{ project }}" # defaults to virtualenv3 project
 django_install_path: /var/www/{{ project }}
 django_installed_apps: []
@@ -11,6 +12,7 @@ django_debug: yes
 django_template_debug: no
 django_allowed_hosts: []
 django_log_path: /var/log/{{ django_project }}
+django_force_deployments: no
 
 # extras
 django_yaml_logfile: no
