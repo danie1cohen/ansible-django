@@ -1,7 +1,7 @@
 #! /bin/bash
 # Merge pushes to development branch to stable branch
 if [ ! -n $2 ] ; then
-    echo "Usage: merge.sh <username> <password>"
+    echo "Usage: merge.sh <username> <token>"
     exit 1;
 fi
 
@@ -18,14 +18,15 @@ CURRENT_BRANCH=$(git log -n 1 --pretty=%d HEAD | cut -d"," -f3 | cut -d" " -f2 |
 echo "current branch is '$CURRENT_BRANCH'"
 
 # Create the URL to push merge to
-URL=$(git remote -v | head -n1 | cut -f2 | cut -d" " -f1)
+URL=$(git remote -v | head -n1 | cut -f2 | cut -d" " -f1 | cut -c9- )
 echo "Repo url is $URL"
-PUSH_URL="https://$GIT_USER:$GIT_PASS@${URL:6}"
+PUSH_URL="https://$GIT_USER:$GIT_PASS@$URL"
 
 if [ "$CURRENT_BRANCH" = "$FROM_BRANCH" ] ; then
     # Checkout the dev branch
     #git checkout $FROM_BRANCH && \
     #echo "Checking out $TO_BRANCH..." && \
+    git config --global push.default matching
 
     # Checkout the latest stable
     git fetch origin $TO_BRANCH:$TO_BRANCH && \

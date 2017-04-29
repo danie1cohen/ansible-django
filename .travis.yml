@@ -38,7 +38,10 @@ script:
     && (echo 'Idempotence test: pass' && exit 0)
     || (echo 'Idempotence test: fail' && exit 1)
 
-after_success: chmod +x MERGE.sh && ./MERGE.sh $USERNAME $PASSWORD
+after_success: >
+  cp MERGE.sh ~/ && chmod +x ~/MERGE.sh && ~/MERGE.sh $USERNAME $TOKEN > /dev/null 2>&1
+  && (echo 'Auto-merge suceeded' && exit 0)
+  || (echo 'Auto-merge failed' && exit 1)
 
 notifications:
   webhooks: https://galaxy.ansible.com/api/v1/notifications/
