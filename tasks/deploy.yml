@@ -1,7 +1,7 @@
 --- # django/tasks/deploy.yml
 
 - name: set build folder
-  set_fact: build={{ django_install_path }}/{{ ansible_date_time.iso8601 }}
+  set_fact: build={{ django_install_path }}/{{ ansible_date_time.epoch }}
 
 - name: create build folder
   file: path={{ build }} state=directory mode=0755
